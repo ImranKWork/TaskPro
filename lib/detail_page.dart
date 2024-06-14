@@ -9,7 +9,8 @@ import 'package:taskpro/constants/strings.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({super.key});
+  var data;
+  DetailPage(this.data, {super.key});
 
   @override
   State<DetailPage> createState() => _DetailPageState();
@@ -17,14 +18,14 @@ class DetailPage extends StatefulWidget {
 
 class _DetailPageState extends State<DetailPage> {
   _launchCaller() async {
-    final Uri url = Uri.parse('tel:1234567');
+    final Uri url = Uri.parse('tel:${widget.data["phone"]}');
     if (!await launchUrl(url)) {
       throw Exception('Could not launch');
     }
   }
 
   _launchURL() async {
-    final Uri url = Uri.parse('https://flutter.dev');
+    final Uri url = Uri.parse(widget.data["url"]);
     if (!await launchUrl(url)) {
       throw Exception('Could not launch');
     }
@@ -32,6 +33,10 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    List address = widget.data["location"]["display_address"];
+    String fulladdress = "";
+    fulladdress = address.join(", ");
+    String distance = widget.data["distance"].toStringAsFixed(2);
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0.0,
@@ -68,32 +73,33 @@ class _DetailPageState extends State<DetailPage> {
             SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: 200,
-                child: Image.asset(
-                                  "assets/download.jpeg",
-                                  fit: BoxFit.cover,
-                                )),
+                child: Image.network(
+                  widget.data["image_url"],
+                  fit: BoxFit.cover,
+                )),
             Container(
                 margin: const EdgeInsets.only(left: 15, right: 15, top: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          "Paczka Shell Cafe VEGE",
+                     Expanded(child:    Text(
+                          widget.data["name"],
                           maxLines: 1,
-                          style: TextStyle(
+                          style: const TextStyle(
                               overflow: TextOverflow.ellipsis,
                               fontFamily: AppStrings.fontname,
                               color: AppColors.blackn,
                               fontWeight: FontWeight.w700,
                               fontSize: 17),
-                        ),
+                        ),),
+                        gapW4,
                         Text(
-                          "\$234",
+                          widget.data["price"],
                           maxLines: 1,
-                          style: TextStyle(
+                          style: const TextStyle(
                               overflow: TextOverflow.ellipsis,
                               fontFamily: AppStrings.fontname,
                               color: AppColors.blackn,
@@ -103,10 +109,10 @@ class _DetailPageState extends State<DetailPage> {
                       ],
                     ),
                     gapH12,
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        const Text(
                           "Distance",
                           maxLines: 1,
                           style: TextStyle(
@@ -117,9 +123,9 @@ class _DetailPageState extends State<DetailPage> {
                               fontSize: 15),
                         ),
                         Text(
-                          "65.7 KM",
+                          "${distance}KM",
                           maxLines: 1,
-                          style: TextStyle(
+                          style: const TextStyle(
                               overflow: TextOverflow.ellipsis,
                               fontFamily: AppStrings.fontname,
                               color: AppColors.blackn,
@@ -146,9 +152,9 @@ class _DetailPageState extends State<DetailPage> {
                           onTap: () {
                             _launchCaller();
                           },
-                          child: const Text(
-                            "+91 8754342365",
-                            style: TextStyle(
+                          child: Text(
+                            widget.data["phone"],
+                            style: const TextStyle(
                                 decoration: TextDecoration.underline,
                                 decorationColor: Colors.blue,
                                 fontFamily: AppStrings.fontname,
@@ -173,13 +179,16 @@ class _DetailPageState extends State<DetailPage> {
                               fontWeight: FontWeight.w500,
                               fontSize: 15),
                         ),
-                        InkWell(
+                        gapW4,
+                        Expanded(
+                            child: InkWell(
                           onTap: () {
                             _launchURL();
                           },
-                          child: const Text(
-                            "www.google.com",
-                            style: TextStyle(
+                          child: Text(
+                            widget.data["url"],
+                            style: const TextStyle(
+                                overflow: TextOverflow.ellipsis,
                                 decoration: TextDecoration.underline,
                                 decorationColor: Colors.blue,
                                 fontFamily: AppStrings.fontname,
@@ -187,7 +196,7 @@ class _DetailPageState extends State<DetailPage> {
                                 fontWeight: FontWeight.w500,
                                 fontSize: 14),
                           ),
-                        )
+                        ))
                       ],
                     ),
                   ],
@@ -197,22 +206,22 @@ class _DetailPageState extends State<DetailPage> {
               padding: const EdgeInsets.only(
                   left: 15, right: 15, top: 10, bottom: 10),
               color: Colors.white,
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.location_on,
                     size: 17,
                   ),
                   gapW6,
-                  Text(
-                    "26 Rajwada Market Indore",
-                    style: TextStyle(
-                        overflow: TextOverflow.ellipsis,
+                  Expanded(
+                      child: Text(
+                    fulladdress,
+                    style: const TextStyle(
                         fontFamily: AppStrings.fontname,
                         color: AppColors.blackn,
                         fontWeight: FontWeight.w400,
                         fontSize: 14),
-                  ),
+                  )),
                 ],
               ),
             ),
@@ -223,10 +232,10 @@ class _DetailPageState extends State<DetailPage> {
                 color: Colors.white,
                 child: Column(
                   children: [
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        const Text(
                           "Rating",
                           style: TextStyle(
                               overflow: TextOverflow.ellipsis,
@@ -236,8 +245,8 @@ class _DetailPageState extends State<DetailPage> {
                               fontSize: 15),
                         ),
                         Text(
-                          "Total Review: 154",
-                          style: TextStyle(
+                          "Total Review: ${widget.data["review_count"].toString()}",
+                          style: const TextStyle(
                               overflow: TextOverflow.ellipsis,
                               fontFamily: AppStrings.fontname,
                               color: AppColors.blackn,
@@ -248,10 +257,10 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                     gapH12,
                     RatingBar(
-                      initialRating: 2,
+                      initialRating: widget.data["rating"],
                       minRating: 0,
                       direction: Axis.horizontal,
-                      allowHalfRating: false,
+                      allowHalfRating: true,
                       ignoreGestures: true,
                       itemSize: 25,
                       itemCount: 5,
@@ -277,86 +286,98 @@ class _DetailPageState extends State<DetailPage> {
                   ],
                 )),
             gapH12,
-            Container(
-              padding: const EdgeInsets.only(
-                  left: 15, right: 15, top: 10, bottom: 10),
-              child: const Text(
-                "Category",
-                style: TextStyle(
-                    overflow: TextOverflow.ellipsis,
-                    fontFamily: AppStrings.fontname,
-                    color: AppColors.blackn,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15),
-              ),
-            ),
-            Container(
-                height: 40,
-                margin: const EdgeInsets.only(left: 15, right: 15, bottom: 5),
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 5,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-                          margin: const EdgeInsets.only(right: 10),
-                          padding: const EdgeInsets.only(left: 10, right: 10),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(width: 0.5),
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(40))),
-                          child: const Center(
-                            child: Text(
-                              "Tamatto",
-                              style: TextStyle(
-                                  fontFamily: AppStrings.fontname,
-                                  color: AppColors.blackn,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14),
-                            ),
-                          ));
-                    })),
-            Container(
-              padding: const EdgeInsets.only(
-                  left: 15, right: 15, top: 10, bottom: 10),
-              child: const Text(
-                "Transaction",
-                style: TextStyle(
-                    overflow: TextOverflow.ellipsis,
-                    fontFamily: AppStrings.fontname,
-                    color: AppColors.blackn,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15),
-              ),
-            ),
-            Container(
-                height: 40,
-                margin: const EdgeInsets.only(left: 15, right: 15, bottom: 5),
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 5,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-                          margin: const EdgeInsets.only(right: 10),
-                          padding: const EdgeInsets.only(left: 10, right: 10),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(width: 0.5),
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(40))),
-                          child: const Center(
-                            child: Text(
-                              "Tamatto",
-                              style: TextStyle(
-                                  fontFamily: AppStrings.fontname,
-                                  color: AppColors.blackn,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 15),
-                            ),
-                          ));
-                    })),
+            widget.data["transactions"].isNotEmpty
+                ? Container(
+                    padding: const EdgeInsets.only(
+                        left: 15, right: 15, top: 10, bottom: 10),
+                    child: const Text(
+                      "Category",
+                      style: TextStyle(
+                          overflow: TextOverflow.ellipsis,
+                          fontFamily: AppStrings.fontname,
+                          color: AppColors.blackn,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15),
+                    ),
+                  )
+                : Container(),
+            widget.data["transactions"].isNotEmpty
+                ? Container(
+                    height: 40,
+                    margin:
+                        const EdgeInsets.only(left: 15, right: 15, bottom: 5),
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: widget.data["categories"].length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                              margin: const EdgeInsets.only(right: 10),
+                              padding:
+                                  const EdgeInsets.only(left: 10, right: 10),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(width: 0.5),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(40))),
+                              child: Center(
+                                child: Text(
+                                  widget.data["categories"][index]["title"],
+                                  style: const TextStyle(
+                                      fontFamily: AppStrings.fontname,
+                                      color: AppColors.blackn,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14),
+                                ),
+                              ));
+                        }))
+                : Container(),
+            widget.data["transactions"].isNotEmpty
+                ? Container(
+                    padding: const EdgeInsets.only(
+                        left: 15, right: 15, top: 10, bottom: 10),
+                    child: const Text(
+                      "Transaction",
+                      style: TextStyle(
+                          overflow: TextOverflow.ellipsis,
+                          fontFamily: AppStrings.fontname,
+                          color: AppColors.blackn,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15),
+                    ),
+                  )
+                : Container(),
+            widget.data["transactions"].isNotEmpty
+                ? Container(
+                    height: 40,
+                    margin:
+                        const EdgeInsets.only(left: 15, right: 15, bottom: 5),
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: widget.data["transactions"].length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                              margin: const EdgeInsets.only(right: 10),
+                              padding:
+                                  const EdgeInsets.only(left: 10, right: 10),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(width: 0.5),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(40))),
+                              child: Center(
+                                child: Text(
+                                  widget.data["transactions"][index],
+                                  style: const TextStyle(
+                                      fontFamily: AppStrings.fontname,
+                                      color: AppColors.blackn,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 15),
+                                ),
+                              ));
+                        }))
+                : Container(),
             gapH12,
           ],
         ),

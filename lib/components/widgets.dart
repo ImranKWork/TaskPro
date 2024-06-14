@@ -7,7 +7,11 @@ import 'package:taskpro/constants/colors.dart';
 import 'package:taskpro/constants/images.dart';
 import 'package:taskpro/constants/strings.dart';
 
-productui(context) {
+productui(context, data) {
+  List address = data["location"]["display_address"];
+  String fulladdress = "";
+  fulladdress = address.join(", ");
+  String distance = data["distance"].toStringAsFixed(2);
   return Container(
     margin: const EdgeInsets.all(5),
     decoration: BoxDecoration(
@@ -30,12 +34,12 @@ productui(context) {
           children: [
             Container(
               height: 120.0,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)), //
                 image: DecorationImage(
-                  image: AssetImage('assets/download.jpeg'),
+                  image: NetworkImage(data["image_url"]),
                   fit: BoxFit.cover,
                 ),
                 shape: BoxShape.rectangle,
@@ -54,31 +58,18 @@ productui(context) {
                           padding: const EdgeInsets.only(
                               left: 10, right: 10, top: 2, bottom: 2),
                           decoration: BoxDecoration(
-                              color: Colors.green,
+                              color:
+                                  data["is_closed"] ? Colors.red : Colors.green,
                               borderRadius: BorderRadius.circular(10)),
-                          child: const Text(
-                            "Open",
-                            style: TextStyle(
+                          child: Text(
+                            data["is_closed"] ? "Closed" : "Open",
+                            style: const TextStyle(
                                 fontFamily: AppStrings.fontname,
                                 color: AppColors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12),
                           ),
                         ),
-                        // InkWell(
-                        //   onTap: () {},
-                        //   child: Container(
-                        //     padding: const EdgeInsets.all(5),
-                        //     decoration: BoxDecoration(
-                        //         color: Colors.black26,
-                        //         borderRadius: BorderRadius.circular(50)),
-                        //     child: const Icon(
-                        //       Icons.favorite_border_outlined,
-                        //       color: Colors.white,
-                        //       size: 20,
-                        //     ),
-                        //   ),
-                        // )
                       ],
                     ),
                     gapH32,
@@ -86,10 +77,10 @@ productui(context) {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         RatingBar(
-                          initialRating: 2,
+                          initialRating: data["rating"],
                           minRating: 0,
                           direction: Axis.horizontal,
-                          allowHalfRating: false,
+                          allowHalfRating: true,
                           ignoreGestures: true,
                           itemSize: 25,
                           itemCount: 5,
@@ -120,13 +111,13 @@ productui(context) {
         ),
         Container(
             margin: const EdgeInsets.only(left: 10, right: 10, top: 5),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Paczka Shell Cafe VEGE",
+                  data["name"],
                   maxLines: 1,
-                  style: TextStyle(
+                  style: const TextStyle(
                       overflow: TextOverflow.ellipsis,
                       fontFamily: AppStrings.fontname,
                       color: AppColors.blackn,
@@ -134,9 +125,9 @@ productui(context) {
                       fontSize: 15),
                 ),
                 Text(
-                  "28 Liberty St Fl 60 New York, NY 10005 ",
+                  fulladdress,
                   maxLines: 2,
-                  style: TextStyle(
+                  style: const TextStyle(
                       overflow: TextOverflow.ellipsis,
                       fontFamily: AppStrings.fontname,
                       color: AppColors.blackn,
@@ -148,16 +139,16 @@ productui(context) {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "15Km",
-                      style: TextStyle(
+                      "${distance}KM",
+                      style: const TextStyle(
                           fontFamily: AppStrings.fontname,
                           color: AppColors.blackn,
                           fontWeight: FontWeight.bold,
                           fontSize: 13),
                     ),
                     Text(
-                      "PLN23.00",
-                      style: TextStyle(
+                      data["price"],
+                      style: const TextStyle(
                           fontFamily: AppStrings.fontname,
                           color: AppColors.themecolor,
                           fontWeight: FontWeight.bold,

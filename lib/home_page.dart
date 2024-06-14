@@ -26,18 +26,18 @@ class _HomePageState extends State<HomePage> {
   List buisnesslist = [];
 
   loginAPi() async {
-    // var provider = Provider.of<HomeApiProvider>(context, listen: false);
-    // await provider.homeApi(AppStrings.businessapi);
-    // if (!provider.isLoading) {
-    //   var response = provider.home_response;
-    //   if (response != []) {
-    //     var jsonResponse = response as Map<String, dynamic>;
-    //     buisnesslist = jsonResponse["businesses"];
-    //     setState(() {});
-    //     print(jsonResponse["businesses"]);
-    //     print(response);
-    //   }
-    // }
+    var provider = Provider.of<HomeApiProvider>(context, listen: false);
+    await provider.homeApi(AppStrings.businessapi);
+    if (!provider.isLoading) {
+      var response = provider.home_response;
+      if (response != []) {
+        var jsonResponse = response as Map<String, dynamic>;
+        buisnesslist = jsonResponse["businesses"];
+        setState(() {});
+        print(buisnesslist);
+        print(response);
+      }
+    }
   }
 
   @override
@@ -67,17 +67,17 @@ class _HomePageState extends State<HomePage> {
                   child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.vertical,
-                      itemCount: 5,
+                      itemCount: buisnesslist.length,
                       itemBuilder: (BuildContext context, int index) {
                         return InkWell(
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const DetailPage()),
+                                    builder: (context) => DetailPage(buisnesslist[index])),
                               );
                             },
-                            child: productui(context));
+                            child: productui(context, buisnesslist[index]));
                       }))
               : Center(
                   child: LoadingAnimationWidget.fourRotatingDots(
