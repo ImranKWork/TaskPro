@@ -74,7 +74,8 @@ class _HomePageState extends State<HomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => DetailPage(buisnesslist[index])),
+                                    builder: (context) =>
+                                        DetailPage(buisnesslist[index])),
                               );
                             },
                             child: productui(context, buisnesslist[index]));
